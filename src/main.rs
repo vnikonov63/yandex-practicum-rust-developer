@@ -4,6 +4,7 @@ mod utils;
 //use config::DEFAULT_COURSE_NAME;
 //use time::OffsetDateTime;
 //use utils::helpers::greet;
+use config::CourseCohort;
 use utils::helpers::show_progress;
 
 fn main() {
@@ -12,6 +13,5 @@ fn main() {
     //println!("I am completing the course: {}", DEFAULT_COURSE_NAME);
 
     println!("My progress in the current module:");
-
     show_progress(5, 15);
 }
