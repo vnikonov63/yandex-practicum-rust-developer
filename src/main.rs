@@ -1,17 +1,17 @@
 mod config;
 mod utils;
 
-//use config::DEFAULT_COURSE_NAME;
-//use time::OffsetDateTime;
-//use utils::helpers::greet;
-use config::CourseCohort;
-use utils::helpers::show_progress;
+use config::CourseConfig;
+use time::OffsetDateTime;
+use utils::helpers::{greet, show_progress};
 
 fn main() {
-    //greet();
-    //println!("Today: {}", OffsetDateTime::now_utc().date());
-    //println!("I am completing the course: {}", DEFAULT_COURSE_NAME);
+    let course = CourseConfig::default();
 
-    println!("My progress in the current module:");
-    show_progress(5, 15);
+    greet();
+
+    println!("Today: {}", OffsetDateTime::now_utc().date());
+    println!("I am completing the course: {}", course);
+    println!("My progress in the current module is:");
+    show_progress(9, 14);
 }

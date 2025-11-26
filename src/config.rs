@@ -1,3 +1,5 @@
+use core::fmt;
+
 pub const DEFAULT_COURSE_NAME: &str = "Rust для действующих разработчиков";
 
 #[derive(Default)]
@@ -8,8 +10,26 @@ pub enum CourseCohort {
     Blockchain,
 }
 
+impl fmt::Display for CourseCohort {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match self {
+            CourseCohort::Start => "Transfer from C/C++/Python",
+            CourseCohort::Base => "Base course",
+            CourseCohort::Blockchain => "Diving into Blockchain",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Default)]
 pub struct CourseConfig {
     pub cohort: CourseCohort,
+}
+
+impl fmt::Display for CourseConfig {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}: {}", DEFAULT_COURSE_NAME, self.cohort)
+    }
 }
 
 impl CourseConfig {
