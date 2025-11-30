@@ -67,6 +67,60 @@ impl Error for AuthError {
     }
 }
 
+#[derive(Debug, PartialEq)]
+enum ValidationError {
+    EmailTooShort,
+    EmailMissingAt,
+    PasswordTooShort,
+    AgeTooYoung,
+}
+
+#[derive(Debug, PartialEq)]
+struct User {
+    email: String,
+    password: String,
+    age: u8,
+}
+
+fn validate_email(email: &str) -> Result<String, ValidationError> {
+    if email.len() >= 5 {
+        email
+            .find('@')
+            .map(|_| email.to_string())
+            .ok_or(ValidationError::EmailMissingAt)
+    } else {
+        Err(ValidationError::EmailTooShort)
+    }
+}
+
+fn validate_password(password: &str) -> Result<String, ValidationError> {
+    if password.len() >= 8 {
+        Ok(password.to_string())
+    } else {
+        Err(ValidationError::PasswordTooShort)
+    }
+}
+
+fn validate_age(age: u8) -> Result<u8, ValidationError> {
+    if age >= 18 {
+        Ok(age)
+    } else {
+        Err(ValidationError::AgeTooYoung)
+    }
+}
+
+fn create_user(email: &str, password: &str, age: u8) -> Result<User, ValidationError> {
+    let validated_email = validate_email(email)?;
+    let validated_password = validate_password(password)?;
+    let validated_age = validate_age(age)?;
+
+    Ok(User {
+        email: validated_email,
+        password: validated_password,
+        age: validated_age,
+    })
+}
+
 fn main() {
     // Exercise from 0.3.1
     let add5 = make_adder(5);
@@ -97,6 +151,51 @@ fn main() {
 
     let err = AuthError::TokenExpired;
     assert_eq!(err.to_string(), "Token expired");
+
+    // Exercise from 0.3.3.3
+    match create_user("user@test.com", "password123", 25) {
+        Ok(user) => println!("User created: {:?}", user),
+        Err(e) => println!("Error: {:?}", e),
+    }
+
+    match create_user("abc", "123", 16) {
+        Ok(user) => println!("User was created: {:?}", user),
+        Err(ValidationError::EmailTooShort) => println!("Email is too short"),
+        Err(ValidationError::EmailMissingAt) => println!("Email is missing @ symbol"),
+        Err(ValidationError::PasswordTooShort) => println!("Password is too short"),
+        Err(ValidationError::AgeTooYoung) => println!("User is too young"),
+    }
+
+    if let Ok(user) = create_user("admin@site.com", "securepass", 30) {
+        println!("Administrator: {:?}", user);
+    }
+
+    let default_age = validate_age(15).unwrap_or(18);
+    println!("Age: {}", default_age);
+
+    assert_eq!(validate_email("ab"), Err(ValidationError::EmailTooShort));
+    assert_eq!(
+        validate_email("test.com"),
+        Err(ValidationError::EmailMissingAt)
+    );
+    assert_eq!(
+        validate_email("user@test.com"),
+        Ok("user@test.com".to_string())
+    );
+
+    assert_eq!(
+        validate_password("1234567"),
+        Err(ValidationError::PasswordTooShort)
+    );
+    assert_eq!(
+        validate_password("password123"),
+        Ok("password123".to_string())
+    );
+
+    assert_eq!(validate_age(17), Err(ValidationError::AgeTooYoung));
+    assert_eq!(validate_age(25), Ok(25));
+
+    println!("All tests for 0.3.3.3 passed");
 
     // Intro Stuff
     let course = CourseConfig::default();
