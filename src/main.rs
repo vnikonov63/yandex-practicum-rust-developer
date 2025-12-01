@@ -1,8 +1,7 @@
 mod config;
 mod utils;
 
-use std::error::Error;
-use std::fmt;
+use std::{cell::RefCell, error::Error, fmt};
 
 use config::CourseConfig;
 use time::OffsetDateTime;
@@ -67,6 +66,7 @@ impl Error for AuthError {
     }
 }
 
+// Exercise from 0.3.3.3
 #[derive(Debug, PartialEq)]
 enum ValidationError {
     EmailTooShort,
@@ -119,6 +119,12 @@ fn create_user(email: &str, password: &str, age: u8) -> Result<User, ValidationE
         password: validated_password,
         age: validated_age,
     })
+}
+
+// Exercise from 0.3.4.1
+fn add_value(cell: &RefCell<Vec<i32>>, value: i32) {
+    let mut data = cell.borrow_mut();
+    data.push(value);
 }
 
 fn main() {
@@ -196,6 +202,15 @@ fn main() {
     assert_eq!(validate_age(25), Ok(25));
 
     println!("All tests for 0.3.3.3 passed");
+
+    // Exercise from 0.3.4.1
+    let numbers = RefCell::new(Vec::new());
+    add_value(&numbers, 10);
+    add_value(&numbers, 20);
+    add_value(&numbers, 30);
+
+    let borrowed = numbers.borrow();
+    assert_eq!(&*borrowed, &[10, 20, 30]);
 
     // Intro Stuff
     let course = CourseConfig::default();
